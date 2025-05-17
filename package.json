@@ -1,0 +1,22 @@
+{
+  "name": "fast",
+  "version": "1.0.0",
+  "description": "Client pour Corundum Quick",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CorundumProject/fast.git"
+  },
+  "author": "Corundum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CorundumProject/fast/issues"
+  },
+  "homepage": "https://github.com/CorundumProject/fast#readme",
+  "devDependencies": {
+    "electron": "^36.2.1"
+  }
+}
