@@ -1,0 +1,11 @@
+# Fichiers d'IDE
+.idea
+.vscode
+
+# Fichiers de système d'exploitation
+.DS_Store
+.Thumbs.db
+
+# Fichiers Node
+node_modules
+package-lock.json
