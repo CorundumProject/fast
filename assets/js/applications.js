@@ -8,6 +8,8 @@ const outputCommand = document.querySelector(".command");
 const status = document.querySelector(".status");
 const searchInput = document.querySelector("#search-input");
 let isDisplayed = false;
+let total = 0;
+let appNumberIndicator = document.querySelector("#apps-number");
 
 // Sélectionner les applications à installer
 function selectApp(card, appId) {
@@ -194,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return response.json();
             })
             .then(data => {
+                applicationsContainer.style.height = "auto";
                 applicationsContainer.innerHTML = "";
                 const fragment = document.createDocumentFragment();
 
@@ -238,6 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Génération des cartes
                 filteredData.forEach(app => {
+                    total++;
+                    appNumberIndicator.textContent = total;
                     const card = renderApplication(app);
                     fragment.appendChild(card);
                 });
@@ -251,6 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
             .catch(error => {
+                applicationsContainer.style.height = "auto";
+                applicationsContainer.innerHTML = "";
                 selectedApplicationContainer.innerHTML = `<p class="alert alert-danger">Impossible de charger les applications. Veuillez réessayer plus tard. Si le problème persiste, veuillez ouvrir une issue sur <a href="https://github.com/corundumproject/quick/issues/" target="_blank" class="alert-link">GitHub</a>.</p>`;
                 console.error("Erreur :", error);
                 searchInput.disabled = true;
