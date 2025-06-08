@@ -10,6 +10,7 @@ const searchInput = document.querySelector("#search-input");
 let isDisplayed = false;
 let total = 0;
 let appNumberIndicator = document.querySelector("#apps-number");
+let downloadButton = document.querySelector("#download-button");
 
 // Sélectionner les applications à installer
 function selectApp(card, appId) {
@@ -74,6 +75,7 @@ function generateInstallCommand() {
         setTimeout(() => {
             errorAlert.style.display = "none";
         }, 5000);
+        console.log("ok");
     }
 }
 
@@ -293,3 +295,4 @@ document.addEventListener("keydown", handleKeyPress);
 // Ajouter un écouteur d'événements pour le bouton "Installer"
 const installButton = document.querySelector("#install-button");
 installButton.addEventListener("click", generateInstallCommand);
+downloadButton.addEventListener("click", generateInstallCommand);
