@@ -5,9 +5,9 @@ const { app, BrowserWindow, shell } = require('electron')
 const createWindow = () => {
     // Création d'une nouvelle instance de BrowserWindow avec des paramètres spécifiques
     const win = new BrowserWindow({
-        width: 1200,      // Largeur de la fenêtre en pixels
-        height: 800,      // Hauteur de la fenêtre en pixels
-        title: 'Corundum Fast',  // Titre de la fenêtre
+        width: 1200,
+        height: 800,
+        title: 'Corundum Fast',
         webPreferences: {
             contextIsolation: true,  // Isole le contexte pour la sécurité
             nodeIntegration: false   // Désactive l'intégration Node.js pour la sécurité

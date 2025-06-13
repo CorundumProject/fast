@@ -24,7 +24,9 @@
     text-align: right;
 }
 
-#applications-container {
+#applications-container,
+#updates-container,
+#uninstall-container {
     height: 75vh;
 }
 
@@ -33,7 +35,9 @@
     cursor: pointer;
 }
 
-#loading {
+#loading,
+#done,
+#warning {
     height: 80vh;
 }
 

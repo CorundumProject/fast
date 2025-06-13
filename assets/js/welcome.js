@@ -1,21 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const alertBox = document.querySelector("#welcome-alert");
-    const closeButton = document.querySelector("#welcome-alert .btn-close");
+    const alertBox = document.querySelector(".welcome-hero");
+    const closeButton = document.querySelector(".welcome-hero .btn");
+    const nav = document.querySelector("nav");
+    const main = document.querySelector("main");
 
     // Vérifie si l'alerte doit être cachée
     if (localStorage.getItem("alert-dismissed") === "true") {
         alertBox.classList.add("d-none");
+        nav.classList.remove("d-none");
+        main.classList.remove("d-none");
     }
 
     // Vérifie que le bouton existe avant d'ajouter l'écouteur
     if (closeButton) {
         closeButton.addEventListener("click", function () {
             localStorage.setItem("alert-dismissed", "true");
-        });
-
-        // Écoute l'événement Bootstrap qui signale que l'alerte a été fermée
-        alertBox.addEventListener("closed.bs.alert", function () {
             alertBox.classList.add("d-none");
+            nav.classList.remove("d-none");
+            main.classList.remove("d-none");
         });
     }
 

@@ -15,14 +15,20 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
     </head>
     <body>
-    <nav class="my-4 container rounded navbar bg-body-tertiary px-3 mb-3 sticky-top">
+    <nav class="d-none my-4 container rounded navbar bg-body-tertiary px-3 mb-3 sticky-top">
         <a class="navbar-brand d-flex align-items-center" id="menu-button" href="index.html">
             <img src="assets/img/logo.png" alt="Icône" height="32" class="me-2">
             Corundum Fast
         </a>
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link fs-4 text-body" href="#" id="download-button"><i class="bi bi-download"></i></a>
+                <a class="nav-link fs-4 text-body" href="#" id="install-button"><i class="bi bi-arrow-down-circle-fill"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fs-4 text-body" href="#" id="update-button"><i class="bi bi-arrow-repeat"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fs-4 text-body" href="#" id="uninstall-button"><i class="bi bi-trash"></i></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fs-4 text-body" href="#" id="settings-button"><i class="bi bi-gear"></i></a>
@@ -33,24 +39,25 @@
             <button id="search-button" class="d-none btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
         </form>
     </nav>
-    <div class="container">
+    <div class="welcome-hero px-4 pt-5 my-5 text-center">
+        <h1 class="display-4 fw-bold text-body-emphasis">Bienvenue</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4"><span class="fw-semibold">Corundum Fast</span> vous permet de télécharger et vos applications depuis la base de données de <span class="fw-semibold">Corundum Quick</span>.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+                <button type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Commencer</button>
+            </div>
+        </div>
+        <div class="overflow-hidden" style="max-height: 30vh;">
+            <div class="container px-5">
+                <img src="assets/img/capture/light.png" class="img-fluid rounded-3 mb-4" alt="Example image" width="700" height="500" loading="lazy">
+            </div>
+        </div>
+    </div>
+    <main class="d-none container">
         <div class="alert alert-primary error" role="alert">
             Veuillez sélectionner une application
         </div>
-        <div id="welcome-alert" class="alert alert-primary d-flex flex-row align-items-center justify-content-between" role="alert">
-            <p class="d-flex align-items-center flex-wrap mb-0 text-start">
-                <i class="bi bi-stars me-2"></i>
-                <span>Bienvenue ! Si c'est votre première fois,</span>
-                <a href="https://corundum.gitbook.io/quick" target="_blank" class="alert-link ms-1">suivez notre tutoriel</a>.
-                <span class="ms-1">Pas de panique ! Vous retrouverez la documentation en appuyant sur A.</span>
-            </p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
         <section id="settings" class="d-none">
-            <!--<div class="head mt-2 d-flex flex-row justify-content-between align-items-center">
-
-                <button id="close-settings" class="btn btn-primary">Retour</button>
-            </div>-->
             <div id="change-alert" class="alert alert-success mt-4 d-none" role="alert">
                 Vos paramètres ont été sauvegardés et appliqués avec succès !
             </div>
@@ -198,18 +205,38 @@
                 </div>
             </div>
         </section>
-        <section id="applications-container" class="row row-cols-1 row-cols-md-4 g-4">
-            <div id="loading" class="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Chargement...</span>
+        <section id="download">
+            <div id="applications-container" class="row row-cols-1 row-cols-md-4 g-4">
+                <div id="loading" class="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <h2 class="fs-1">Connexion à Quick</h2>
                 </div>
-                <h2 class="fs-1">Connexion à Quick</h2>
+            </div>
+        </section>
+        <section id="update" class="d-none">
+            <div id="updates-container" class="row row-cols-1 row-cols-md-4 g-4">
+                <div id="done" class="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                    <h2 class="fs-1"><i class="bi bi-check-lg"></i></h2>
+                    <h3 class="fs-2">Vous êtes à jour</h3>
+                </div>
+            </div>
+        </section>
+        <section id="uninstall" class="d-none">
+            <div id="uninstall-container" class="row row-cols-1 row-cols-md-4 g-4">
+                <div id="warning" class="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                    <h2 class="fs-1"><i class="bi bi-exclamation-circle"></i></h2>
+                    <h3 class="fs-2">Aucunes applications</h3>
+                    <p class="text-muted"><span class="fw-semibold">Fast</span> n'a trouvé aucunes applications à désinstaller.</p>
+                    <a href="#" id="install-page-button" class="btn btn-primary">Installer des applications</a>
+                </div>
             </div>
         </section>
         <section id="application-detail" class="mt-4">
 
         </section>
-    </div>
+    </main>
     <!-- Appel des fichiers JavaScript -->
     <script src="assets/js/applications.js"></script>
     <script src="assets/js/nav.js"></script>

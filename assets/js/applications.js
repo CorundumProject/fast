@@ -38,15 +38,25 @@ function appDetails(appId) {
                     <div class="card d-flex flex-row justify-content-between align-items-center">
                         <img src="${app.icon}" alt="${app.name}" class="w-25 mb-3 text-center">
                         <div class="card-body d-flex flex-column align-items-center justify-content-start">
-                            <h5 class="w-100 card-title text-left">${app.name}</h5>
-                            <h6 class="w-100 card-subtitle text-left mb-2 text-muted">${app.category}</h6>
+                            <h3 class="w-100 card-title text-left fs-2">${app.name}</h3>
+                            <h4 class="w-100 card-subtitle text-left mb-2 text-muted fs-4">${app.category}</h4>
                             <p class="w-100 card-text text-left">${app.description}</p>
-                            <h6 class="w-100 text-left">Assistant compatibilité</h6>
-                            <ul class="w-100 text-left">
-                                <li class="card-text">Vous devez être sur macOS ${app.version}</li>
-                                <li class="card-text">Vous devez avoir un processeur ${app.architecture}</li>
-                            </ul>
-                            <div class="btn-group w-100" role="group" aria-label="Interaction avec l'application">
+                            <div class="accordion w-100 mb-2">
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#compatibility" aria-expanded="false" aria-controls="compatibility">Assistant compatibilité</button>
+                                    </div>
+                                    <div id="compatibility" class="accordion-collapse collapse" aria-expanded="false">
+                                        <div class="accordion-body">
+                                            <ul class="w-100 text-left">
+                                                <li class="card-text">Vous devez être sur macOS ${app.version}</li>
+                                                <li class="card-text">Vous devez avoir un processeur ${app.architecture}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-group w-100 mt-2" role="group" aria-label="Interaction avec l'application">
                                 <a href="${app.website}" target="_blank" class="btn btn-primary">Site officiel</a>
                                 <button id="back-button" class="btn btn-secondary">Revenir en arrière</button>
                             </div>
