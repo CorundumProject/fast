@@ -11,6 +11,8 @@ let isDisplayed = false;
 let total = 0;
 let appNumberIndicator = document.querySelector("#apps-number");
 let downloadButton = document.querySelector("#download-button");
+let categories = [];
+const categoriesContainer = document.querySelector("#categories-container");
 
 // Sélectionner les applications à installer
 function selectApp(card, appId) {
@@ -21,7 +23,7 @@ function selectApp(card, appId) {
         selectedApplications.push(appId);
         card.classList.add("border-primary");
     } else {
-        // Retirer l'application si elle est déjà sélectionnée
+        // Retirer l'application si elle est déjà sélectionnée 
         selectedApplications.splice(index, 1);
         card.classList.remove("border-primary");
     }
@@ -80,6 +82,7 @@ function hideDetails() {
 // Générer la ligne de commande brew qui va permettre d'installer les applications
 function generateInstallCommand() {
     if (selectedApplications.length === 0) {
+        // Afficher une erreur si aucune application n'est sélectionnée
         errorAlert.style.display = "block";
         errorAlert.style.animation = "displayError 5s ease-in-out";
         setTimeout(() => {
@@ -89,14 +92,16 @@ function generateInstallCommand() {
     }
 }
 
+// Fonction pour générer l'affichage d'une application selon le mode list ou cards
 function renderApplication(app) {
     const disposition = localStorage.getItem("application-disposition") || "cards";
 
     if (disposition === "list") {
+        // Code pour l'affichage en mode liste
         const col = document.createElement("div");
         col.classList.add("col-12", "w-100");
 
-        // Conteneur principal
+        // Conteneur principal pour une ligne
         const wrapperDiv = document.createElement("div");
         wrapperDiv.classList.add("list", "w-100", "d-flex", "align-items-center", "justify-content-between", "border", "rounded", "p-2");
 
@@ -125,7 +130,7 @@ function renderApplication(app) {
         const infoButton = document.createElement("i");
         infoButton.classList.add("bi", "bi-info-circle", "fs-5", "text-secondary");
         infoButton.setAttribute("role", "button");
-        infoButton.addEventListener("click", () => appDetails(app.id)); // Ajout de la fonction de détails
+        infoButton.addEventListener("click", () => appDetails(app.id));
 
         infoDiv.appendChild(appIcon);
         infoDiv.appendChild(appName);
@@ -133,11 +138,13 @@ function renderApplication(app) {
         wrapperDiv.appendChild(infoButton);
         col.appendChild(wrapperDiv);
 
-        return col; // Retourne l'élément pour ajout
+        return col;
     } else {
+        // Code pour l'affichage en mode cartes 
         const colDiv = document.createElement("div");
         colDiv.classList.add("col-md-4", "mb-3");
 
+        // Gestion de la taille des cartes selon les préférences
         if (localStorage.getItem("cards-size") === "big") {
             colDiv.classList.add("w-50");
         } else if (localStorage.getItem("cards-size") === "small") {
@@ -146,6 +153,8 @@ function renderApplication(app) {
 
         const cardDiv = document.createElement("div");
         cardDiv.classList.add("card", "h-100", "border-3");
+
+        // Gestion du mode d'installation (stable/beta)
         if (localStorage.getItem("application-type") === "default") {
             cardDiv.addEventListener("click", () => selectApp(cardDiv, app.id));
         } else if (localStorage.getItem("application-type") === "pre-release") {
@@ -175,7 +184,8 @@ function renderApplication(app) {
         cardLink.classList.add("btn", "btn-primary", "mt-2", "mb-2", "w-100");
         cardLink.textContent = "Détails";
         cardLink.addEventListener("click", (event) => {
-            event.stopPropagation(); // Empêcher la propagation de l'événement
+            // Empêche le déclenchement de l'événement de sélection
+            event.stopPropagation();
             if (app.id) {
                 appDetails(app.id);
             } else if (app.beta) {
@@ -189,16 +199,100 @@ function renderApplication(app) {
         cardDiv.appendChild(cardBody);
         cardBody.appendChild(cardLink);
         colDiv.appendChild(cardDiv);
-        return colDiv; // Retourne l'élément pour ajout
+        return colDiv;
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Chargement du fichier JSON avec fetch()
+    // Initialisation des éléments DOM
     const applicationsContainer = document.querySelector("#applications-container");
     const searchInput = document.querySelector("#search-input");
     const searchButton = document.querySelector("#search-button");
 
+    // Afficher les catégories dans un slider horizontal
+    function displayCategoriesPill() {
+        fetch("https://corundum.fr/quick/assets/json/applications.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur lors du chargement du fichier JSON");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Récupération et tri des catégories uniques
+                for (let i = 0; i < data.length; i++) {
+                    if (!categories.includes(data[i].category)) {
+                        categories.push(data[i].category);
+                    }
+                }
+                categories.sort();
+
+                // Création du slider de catégories
+                const sliderWrapper = document.createElement('div');
+                sliderWrapper.id = 'categories-slider';
+                sliderWrapper.classList.add('d-flex', 'flex-row', 'overflow-x-auto', 'gap-2', 'mb-2');
+                sliderWrapper.style.overflowX = 'auto';
+                sliderWrapper.style.scrollbarWidth = 'thin';
+                sliderWrapper.style.msOverflowStyle = 'none';
+
+                const innerContainer = document.createElement('div');
+                innerContainer.classList.add('d-flex', 'align-items-center', 'gap-2', 'pb-2');
+                innerContainer.style.whiteSpace = 'nowrap';
+
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.classList.add('btn', 'btn-outline-primary');
+                    button.style.flexShrink = '0';
+                    button.type = 'button';
+                    button.textContent = category;
+
+                    // Gestion du filtrage par catégorie
+                    button.addEventListener('click', () => {
+                        // Désactivation du filtre si déjà actif
+                        if (button.classList.contains('active')) {
+                            button.classList.remove('active', 'btn-primary');
+                            button.classList.add('btn-outline-primary');
+                            fetchAndDisplayApps();
+                            return;
+                        }
+
+                        // Réinitialisation des boutons
+                        innerContainer.querySelectorAll('button').forEach(btn => {
+                            btn.classList.remove('active', 'btn-primary');
+                            btn.classList.add('btn-outline-primary');
+                        });
+
+                        // Activation du filtre sélectionné
+                        button.classList.add('active', 'btn-primary');
+                        button.classList.remove('btn-outline-primary');
+
+                        // Filtrage et affichage
+                        const filteredApps = data.filter(app => app.category === category);
+                        applicationsContainer.innerHTML = "";
+                        const fragment = document.createDocumentFragment();
+
+                        total = filteredApps.length;
+                        appNumberIndicator.textContent = total;
+
+                        filteredApps.forEach(app => {
+                            const card = renderApplication(app);
+                            fragment.appendChild(card);
+                        });
+
+                        applicationsContainer.appendChild(fragment);
+                    });
+
+                    innerContainer.appendChild(button);
+                });
+
+                sliderWrapper.appendChild(innerContainer);
+                categoriesContainer.innerHTML = '';
+                categoriesContainer.appendChild(sliderWrapper);
+                categoriesContainer.classList.remove("d-none");
+            });
+    }
+
+    // Récupérer et afficher les applications 
     function fetchAndDisplayApps(searchTerm = "") {
         fetch("https://corundum.fr/quick/assets/json/applications.json")
             .then(response => {
@@ -210,10 +304,13 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 applicationsContainer.style.height = "auto";
                 applicationsContainer.innerHTML = "";
-                const fragment = document.createDocumentFragment();
 
+                displayCategoriesPill();
+
+                const fragment = document.createDocumentFragment();
                 const lowerSearch = searchTerm.toLowerCase();
 
+                // Création du bouton d'installation
                 const installCard = document.createElement("div");
                 installCard.classList.add("w-100", "border", "border-0", "text-end");
 
@@ -226,14 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     generateInstallCommand();
                 });
 
-                // Filtrage
+                // Filtrage des applications selon la recherche
                 let filteredData = data.filter(app =>
                     app.name.toLowerCase().includes(lowerSearch) ||
                     app.category.toLowerCase().includes(lowerSearch) ||
                     app.developer.toLowerCase().includes(lowerSearch)
                 );
 
-                // Tri
+                // Tri des applications selon les préférences
                 const sort = localStorage.getItem("application-sort");
                 if (sort === "a-z") {
                     filteredData.sort((a, b) => a.name.localeCompare(b.name));
@@ -245,13 +342,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     filteredData.sort((a, b) => a.developer.localeCompare(b.developer));
                 }
 
-                // Affichage du bouton Installer en haut si actif
+                // Position du bouton d'installation selon les préférences
                 if (localStorage.getItem("install-button") === "top") {
                     applicationsContainer.appendChild(installCard);
                     installCard.appendChild(installButton);
                 }
 
-                // Génération des cartes
+                // Affichage des applications filtrées
                 filteredData.forEach(app => {
                     total++;
                     appNumberIndicator.textContent = total;
@@ -261,13 +358,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 applicationsContainer.appendChild(fragment);
 
-                // Affichage du bouton Installer en haut si actif
                 if (localStorage.getItem("install-button") === "bottom") {
                     applicationsContainer.appendChild(installCard);
                     installCard.appendChild(installButton);
                 }
             })
             .catch(error => {
+                // Gestion des erreurs de chargement
                 applicationsContainer.style.height = "auto";
                 applicationsContainer.innerHTML = "";
                 selectedApplicationContainer.innerHTML = `<p class="alert alert-danger">Impossible de charger les applications. Veuillez réessayer plus tard. Si le problème persiste, veuillez ouvrir une issue sur <a href="https://github.com/corundumproject/quick/issues/" target="_blank" class="alert-link">GitHub</a>.</p>`;
@@ -276,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    // Événements de recherche
     searchButton.addEventListener("click", () => {
         fetchAndDisplayApps(searchInput.value);
     });
@@ -287,22 +385,19 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchAndDisplayApps();
 });
 
-// Gestion des événements clavier
+// Gestion des raccourcis clavier
 function handleKeyPress(event) {
-    // Ignorer les événements clavier si la barre de recherche est utilisée
     if (searchInput === document.activeElement) return;
     if (event.key === "i" || event.key === "I") {
-        // Générer et afficher la commande
         const command = "brew install --cask " + selectedApplications.join(" ");
         outputCommand.textContent = command;
         generateInstallCommand();
     }
 }
 
-// Activer/Désactiver les événements clavier
 document.addEventListener("keydown", handleKeyPress);
 
-// Ajouter un écouteur d'événements pour le bouton "Installer"
+// Gestion des boutons d'installation
 const installButton = document.querySelector("#install-button");
 installButton.addEventListener("click", generateInstallCommand);
 downloadButton.addEventListener("click", generateInstallCommand);
