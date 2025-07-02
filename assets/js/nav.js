@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Définition des containers
     const downloadContainer = document.querySelector("#download");
+    const installContainer = document.querySelector("#install");
     const updateContainer = document.querySelector("#update");
     const uninstallContainer = document.querySelector("#uninstall");
     const settingsContainer = document.querySelector("#settings");
+    const applicationDetailContainer = document.querySelector("#application-detail");
 
     // Définition des icônes
     const downloadIcon = "<i class=\"bi bi-arrow-down-circle\"></i>";
@@ -31,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour afficher la page d'installation d'applications
     function showInstall() {
+        applicationDetailContainer.classList.remove("d-none");
         downloadContainer.classList.remove("d-none");
+        installContainer.classList.add("d-none");
         updateContainer.classList.add("d-none");
         uninstallContainer.classList.add("d-none");
         settingsContainer.classList.add("d-none");
@@ -45,9 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour afficher la page de mise à jour d'applications
     function showUpdate() {
         downloadContainer.classList.add("d-none");
+        installContainer.classList.add("d-none");
         updateContainer.classList.remove("d-none");
         uninstallContainer.classList.add("d-none");
         settingsContainer.classList.add("d-none");
+        applicationDetailContainer.classList.add("d-none");
         downloadButton.innerHTML = downloadIcon;
         updateButton.innerHTML = selectedUpdateIcon;
         uninstallButton.innerHTML = uninstallIcon;
@@ -58,9 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour afficher la page de désinstallation d'applications
     function showUninstall() {
         downloadContainer.classList.add("d-none");
+        installContainer.classList.add("d-none");
         updateContainer.classList.add("d-none");
         uninstallContainer.classList.remove("d-none");
         settingsContainer.classList.add("d-none");
+        applicationDetailContainer.classList.add("d-none");
         downloadButton.innerHTML = downloadIcon;
         updateButton.innerHTML = updateIcon;
         uninstallButton.innerHTML = selectedUninstallIcon;
@@ -71,9 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour afficher les paramètres
     function showSettings() {
         downloadContainer.classList.add("d-none");
+        installContainer.classList.add("d-none");
         updateContainer.classList.add("d-none");
         uninstallContainer.classList.add("d-none");
         settingsContainer.classList.remove("d-none");
+        applicationDetailContainer.classList.add("d-none");
         downloadButton.innerHTML = downloadIcon;
         updateButton.innerHTML = updateIcon;
         uninstallButton.innerHTML = uninstallIcon;

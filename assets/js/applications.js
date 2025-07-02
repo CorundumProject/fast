@@ -13,6 +13,28 @@ let appNumberIndicator = document.querySelector("#apps-number");
 let downloadButton = document.querySelector("#download-button");
 let categories = [];
 const categoriesContainer = document.querySelector("#categories-container");
+let command;
+
+// Définition des containers
+const downloadContainer = document.querySelector("#download");
+const installContainer = document.querySelector("#install");
+const updateContainer = document.querySelector("#update");
+const uninstallContainer = document.querySelector("#uninstall");
+const settingsContainer = document.querySelector("#settings");
+const applicationDetailContainer = document.querySelector("#application-detail");
+
+// Définition des icônes
+const downloadIcon = "<i class=\"bi bi-arrow-down-circle\"></i>";
+const selectedDownloadIcon = "<i class=\"bi bi-arrow-down-circle-fill\"></i>";
+const updateIcon = "<i class=\"bi bi-arrow-up-circle\"></i>";
+const selectedUpdateIcon = "<i class=\"bi bi-arrow-up-circle-fill\"></i>";
+const uninstallIcon = "<i class=\"bi bi-trash\"></i>";
+const selectedUninstallIcon = "<i class=\"bi bi-trash-fill\"></i>";
+const settingsIcon = "<i class=\"bi bi-gear\"></i>";
+const selectedSettingsIcon = "<i class=\"bi bi-gear-fill\"></i>";
+
+// const { exec } = require('child_process');
+// const sudo = require('sudo-prompt');
 
 // Sélectionner les applications à installer
 function selectApp(card, appId) {
@@ -79,16 +101,146 @@ function hideDetails() {
     searchInput.disabled = false;
 }
 
-// Générer la ligne de commande brew qui va permettre d'installer les applications
-function generateInstallCommand() {
-    if (selectedApplications.length === 0) {
-        // Afficher une erreur si aucune application n'est sélectionnée
-        errorAlert.style.display = "block";
-        errorAlert.style.animation = "displayError 5s ease-in-out";
-        setTimeout(() => {
-            errorAlert.style.display = "none";
-        }, 5000);
-        console.log("ok");
+// Fonction pour mettre à jour la barre de progression
+function updateProgressBar(progress) {
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
+}
+
+// Fonction pour afficher le spinner de chargement
+function showLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+    }
+}
+
+// Fonction pour cacher le spinner de chargement
+function hideLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+// Fonction pour gérer les erreurs
+function handleError(error) {
+    const errorAlert = document.getElementById('errorAlert');
+    if (!errorAlert) return;
+
+    let errorMessage = "Une erreur est survenue durant l'installation";
+
+    if (error.includes('password')) {
+        errorMessage = "Erreur d'authentification";
+    } else if (error.includes('network')) {
+        errorMessage = "Erreur de connexion";
+    }
+
+    errorAlert.textContent = errorMessage;
+    errorAlert.style.display = "block";
+    errorAlert.style.animation = "displayError 5s ease-in-out";
+    setTimeout(() => {
+        errorAlert.style.display = "none";
+    }, 5000);
+}
+
+// Fonction pour afficher le succès
+function showSuccess(message) {
+    const successAlert = document.getElementById('successAlert');
+    if (!successAlert) return;
+
+    successAlert.textContent = message || "Installation réussie !";
+    successAlert.style.display = "block";
+    successAlert.style.animation = "displaySuccess 5s ease-in-out";
+    setTimeout(() => {
+        successAlert.style.display = "none";
+    }, 5000);
+}
+
+// Vérification de l'installation de Homebrew
+async function checkBrewInstallation() {
+    return new Promise((resolve, reject) => {
+        exec('which brew', (error) => {
+            if (error) {
+                reject(new Error('Homebrew n\'est pas installé'));
+                return;
+            }
+            resolve(true);
+        });
+    });
+}
+
+// Fonction principale pour générer et exécuter les commandes d'installation
+async function generateInstallCommand() {
+    const errorAlert = document.getElementById('errorAlert');
+
+    if (!selectedApplications || selectedApplications.length === 0) {
+        if (errorAlert) {
+            errorAlert.textContent = "Veuillez sélectionner au moins une application";
+            errorAlert.style.display = "block";
+            errorAlert.style.animation = "displayError 5s ease-in-out";
+            setTimeout(() => {
+                errorAlert.style.display = "none";
+            }, 5000);
+        }
+        return;
+    }
+
+    try {
+        // Vérifier si Homebrew est installé
+        await checkBrewInstallation();
+
+        // Construire la commande brew
+        const brewCommands = selectedApplications
+            .map(app => `brew install ${app.id.brew}`)
+            .join(' && ');
+
+        // Options pour sudo-prompt
+        const options = {
+            name: 'Installation des applications',
+            // icns: '/chemin/vers/icone.icns' // Remplacer par le chemin de votre icône
+        };
+
+        // Afficher le chargement
+        showLoading();
+
+        // Initialiser la barre de progression
+        let progress = 0;
+        const increment = 100 / selectedApplications.length;
+
+        // Mettre à jour la progression pour chaque application
+        selectedApplications.forEach((app, index) => {
+            setTimeout(() => {
+                progress += increment;
+                updateProgressBar(progress);
+            }, index * 1000);
+        });
+
+        // Exécuter la commande avec les privilèges administrateur
+        sudo.exec(brewCommands, options, (error, stdout, stderr) => {
+            hideLoading();
+
+            if (error) {
+                console.error('Erreur durant l\'installation :', error);
+                handleError(error.message);
+                return;
+            }
+
+            if (stderr) {
+                console.warn('Avertissements :', stderr);
+            }
+
+            console.log('Installation réussie :', stdout);
+            showSuccess();
+            updateProgressBar(100);
+        });
+
+    } catch (error) {
+        hideLoading();
+        handleError(error.message);
+        console.error('Erreur :', error);
     }
 }
 
@@ -390,9 +542,22 @@ function handleKeyPress(event) {
     if (searchInput === document.activeElement) return;
     if (event.key === "i" || event.key === "I") {
         const command = "brew install --cask " + selectedApplications.join(" ");
-        outputCommand.textContent = command;
         generateInstallCommand();
     }
+}
+
+function showInstall() {
+    downloadContainer.classList.add("d-none");
+    installContainer.classList.add("d-none");
+    updateContainer.classList.add("d-none");
+    uninstallContainer.classList.add("d-none");
+    settingsContainer.classList.remove("d-none");
+    applicationDetailContainer.classList.add("d-none");
+    downloadButton.innerHTML = downloadIcon;
+    updateButton.innerHTML = updateIcon;
+    uninstallButton.innerHTML = uninstallIcon;
+    settingsButton.innerHTML = settingsIcon;
+    searchInput.disabled = true;
 }
 
 document.addEventListener("keydown", handleKeyPress);
@@ -401,3 +566,12 @@ document.addEventListener("keydown", handleKeyPress);
 const installButton = document.querySelector("#install-button");
 installButton.addEventListener("click", generateInstallCommand);
 downloadButton.addEventListener("click", generateInstallCommand);
+
+// Exporter les fonctions si nécessaire
+module.exports = {
+    generateInstallCommand,
+    checkBrewInstallation,
+    updateProgressBar,
+    showLoading,
+    hideLoading
+};

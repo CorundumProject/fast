@@ -18,5 +18,8 @@
   "homepage": "https://github.com/CorundumProject/fast#readme",
   "devDependencies": {
     "electron": "^36.2.1"
+  },
+  "dependencies": {
+    "sudo-prompt": "^9.2.1"
   }
 }
