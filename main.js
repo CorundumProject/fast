@@ -1,5 +1,7 @@
 // Importation des modules nécessaires d'Electron
 const { app, BrowserWindow, shell } = require('electron')
+const { exec } = require('child_process');
+const sudo = require('sudo-prompt');
 
 // Fonction pour créer la fenêtre principale de l'application
 const createWindow = () => {
