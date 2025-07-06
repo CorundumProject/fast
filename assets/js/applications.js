@@ -33,9 +33,6 @@ const selectedUninstallIcon = "<i class=\"bi bi-trash-fill\"></i>";
 const settingsIcon = "<i class=\"bi bi-gear\"></i>";
 const selectedSettingsIcon = "<i class=\"bi bi-gear-fill\"></i>";
 
-// const { exec } = require('child_process');
-// const sudo = require('sudo-prompt');
-
 // Sélectionner les applications à installer
 function selectApp(card, appId) {
     const index = selectedApplications.indexOf(appId);
@@ -87,6 +84,7 @@ function appDetails(appId) {
                         </div>
                     </div>
                 `;
+                categoriesContainer.classList.add("d-none");
                 applicationsContainer.classList.add("d-none");
                 searchInput.disabled = true;
                 document.querySelector("#back-button").addEventListener("click", hideDetails);
